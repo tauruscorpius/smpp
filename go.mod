@@ -1,4 +1,4 @@
-module smpp
+module github.com/tauruscorpius/smpp
 
 go 1.21.4
 

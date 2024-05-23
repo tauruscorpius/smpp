@@ -352,6 +352,29 @@ func (s *Smpp) QuerySm(message_id, source_addr string, params *Params) (Pdu, err
 	return p, nil
 }
 
+func (s *Smpp) QuerySmResp(seq uint32, message_id string, params *Params) (Pdu, error) {
+
+	p, _ := NewQuerySm(
+		&Header{
+			Id:       QUERY_SM_RESP,
+			Sequence: seq,
+		},
+		[]byte{},
+	)
+
+	p.SetField(MESSAGE_ID, message_id)
+
+	for f, v := range *params {
+		err := p.SetField(f, v)
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return p, nil
+}
+
 func (s *Smpp) Unbind() (Pdu, error) {
 	p, _ := NewUnbind(
 		&Header{

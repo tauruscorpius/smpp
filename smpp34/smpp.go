@@ -354,7 +354,7 @@ func (s *Smpp) QuerySm(message_id, source_addr string, params *Params) (Pdu, err
 
 func (s *Smpp) QuerySmResp(seq uint32, message_id string, params *Params) (Pdu, error) {
 
-	p, _ := NewQuerySm(
+	p, _ := NewQuerySmResp(
 		&Header{
 			Id:       QUERY_SM_RESP,
 			Sequence: seq,

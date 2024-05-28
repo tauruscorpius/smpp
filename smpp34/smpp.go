@@ -461,9 +461,22 @@ func (s *Smpp) Close() {
 	s.conn.Close()
 }
 
+
+func readUntil(conn net.Conn, data []byte) error {
+	readPos := 0
+	for readPos < len(data) {
+		i, err := conn.Read(data[readPos:])
+		if err != nil {
+			return err
+		}
+		readPos += i
+	}
+	return nil
+}
 func SmppReadFrom(conn net.Conn) (Pdu, error) {
 	l := make([]byte, 4)
-	_, err := conn.Read(l)
+
+	err := readUntil(conn, l)
 	if err != nil {
 		return nil, err
 	}
@@ -475,13 +488,9 @@ func SmppReadFrom(conn net.Conn) (Pdu, error) {
 
 	data := make([]byte, pduLength)
 
-	i, err := conn.Read(data)
+	err = readUntil(conn, data)
 	if err != nil {
 		return nil, err
-	}
-
-	if i != int(pduLength) {
-		return nil, SmppPduLenErr
 	}
 
 	pkt := append(l, data...)

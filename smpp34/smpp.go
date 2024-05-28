@@ -15,7 +15,8 @@ var Debug bool
 type NewSeqNumFunc func() uint32
 
 type Smpp struct {
-	Mu            sync.Mutex
+	seqMutex      sync.Mutex
+	writeMuex     sync.RWMutex
 	conn          net.Conn
 	reader        *bufio.Reader
 	writer        *bufio.Writer
@@ -90,9 +91,9 @@ func (s *Smpp) NewSeqNum() uint32 {
 		return s.NewSeqNumFunc()
 	}
 
-	defer s.Mu.Unlock()
+	defer s.seqMutex.Unlock()
 
-	s.Mu.Lock()
+	s.seqMutex.Lock()
 	s.Sequence++
 	return s.Sequence
 }
@@ -424,8 +425,9 @@ func (s *Smpp) GenericNack(seq uint32, status CMDStatus) (Pdu, error) {
 
 func (s *Smpp) Read() (Pdu, error) { return SmppReadFrom(s.conn) }
 
-func (s *Smpp) Write(p Pdu) error {
-	data := p.Writer()
+func (s *Smpp) write(data []byte) error {
+	s.writeMuex.Lock()
+	defer s.writeMuex.Unlock()
 
 	sent, err := s.conn.Write(data)
 	if err != nil {
@@ -440,6 +442,13 @@ func (s *Smpp) Write(p Pdu) error {
 		}
 		sent += w
 	}
+	return nil
+}
+
+func (s *Smpp) Write(p Pdu) error {
+	data := p.Writer()
+
+	err := s.write(data)
 
 	if Debug {
 		fmt.Println(hex.Dump(data))

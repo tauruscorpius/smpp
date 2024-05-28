@@ -425,10 +425,24 @@ func (s *Smpp) GenericNack(seq uint32, status CMDStatus) (Pdu, error) {
 func (s *Smpp) Read() (Pdu, error) { return SmppReadFrom(s.conn) }
 
 func (s *Smpp) Write(p Pdu) error {
-	_, err := s.conn.Write(p.Writer())
+	data := p.Writer()
+
+	sent, err := s.conn.Write(data)
+	if err != nil {
+		return err
+	}
+
+	for sent < len(data) {
+		var w int
+		w, err = s.conn.Write(data[sent:])
+		if err != nil {
+			return err
+		}
+		sent += w
+	}
 
 	if Debug {
-		fmt.Println(hex.Dump(p.Writer()))
+		fmt.Println(hex.Dump(data))
 	}
 
 	return err

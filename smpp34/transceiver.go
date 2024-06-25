@@ -227,6 +227,10 @@ func (t *Transceiver) Read() (Pdu, error) {
 	}
 
 	switch pdu.GetHeader().Id {
+	case SUBMIT_SM:
+		return pdu, nil
+	case QUERY_SM:
+		return pdu, nil
 	case SUBMIT_SM_RESP, DELIVER_SM:
 		return pdu, nil
 	case ENQUIRE_LINK:

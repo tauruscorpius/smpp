@@ -106,7 +106,7 @@ func create_pdu_fields(fieldNames []string, r *bytes.Buffer) (map[string]Field, 
 	eof := false
 	for _, k := range fieldNames {
 		switch k {
-		case SERVICE_TYPE, SOURCE_ADDR, DESTINATION_ADDR, SCHEDULE_DELIVERY_TIME, VALIDITY_PERIOD, SYSTEM_ID, PASSWORD, SYSTEM_TYPE, ADDRESS_RANGE, MESSAGE_ID, FINAL_DATE, MESSAGE_STATE, ERROR_CODE, SHORT_MESSAGE:
+		case SERVICE_TYPE, SOURCE_ADDR, DESTINATION_ADDR, SCHEDULE_DELIVERY_TIME, VALIDITY_PERIOD, SYSTEM_ID, PASSWORD, SYSTEM_TYPE, ADDRESS_RANGE, MESSAGE_ID, FINAL_DATE, MESSAGE_STATE, ERROR_CODE:
 			// Review this for fields that could be 1 or 17 int in length (E.g: FINAL_DATE)
 			t, err := r.ReadBytes(0x00)
 
@@ -154,6 +154,10 @@ func create_pdu_fields(fieldNames []string, r *bytes.Buffer) (map[string]Field, 
 			}
 
 			fields[SHORT_MESSAGE] = NewSMField(p)
+		case SHORT_MESSAGE:
+			t := r.Next(r.Len())
+
+			fields[k] = NewVariableField(t)
 		}
 	}
 

@@ -155,9 +155,7 @@ func create_pdu_fields(fieldNames []string, r *bytes.Buffer) (map[string]Field, 
 
 			fields[SHORT_MESSAGE] = NewSMField(p)
 		case SHORT_MESSAGE:
-			t := r.Next(r.Len())
-
-			fields[k] = NewVariableField(t)
+			continue
 		}
 	}
 

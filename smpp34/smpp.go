@@ -461,6 +461,9 @@ func (s *Smpp) Close() {
 	s.conn.Close()
 }
 
+func (s *Smpp) GetLocalAddress() string {
+	return s.conn.LocalAddr().String()
+}
 
 func readUntil(conn net.Conn, data []byte) error {
 	readPos := 0

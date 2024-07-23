@@ -37,7 +37,7 @@ func testClient(t *testing.T, config *tls.Config) {
 
 	var c *Smpp
 	if config == nil {
-		c, err = NewSmppConnect(host, port)
+		c, err = NewSmppConnect(host, port, 0)
 	} else {
 		config.InsecureSkipVerify = true
 		c, err = NewSmppConnectTLS(host, port, config)

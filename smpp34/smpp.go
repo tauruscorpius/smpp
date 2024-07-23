@@ -8,6 +8,7 @@ import (
 	"net"
 	"strconv"
 	"sync"
+	"time"
 )
 
 var Debug bool
@@ -48,16 +49,20 @@ func (p SmppBindAuthErr) Error() string {
 	return string(p)
 }
 
-func NewSmppConnect(host string, port int) (*Smpp, error) {
+func NewSmppConnect(host string, port int, timeout time.Duration) (*Smpp, error) {
 	s := &Smpp{}
 
-	err := s.Connect(host, port)
+	err := s.Connect(host, port, timeout)
 
 	return s, err
 }
 
-func (s *Smpp) Connect(host string, port int) (err error) {
-	s.conn, err = net.Dial("tcp", host+":"+strconv.Itoa(port))
+func (s *Smpp) Connect(host string, port int, timeout time.Duration) (err error) {
+	if timeout == 0 {
+		s.conn, err = net.Dial("tcp", host+":"+strconv.Itoa(port))
+	} else {
+		s.conn, err = net.DialTimeout("tcp", host+":"+strconv.Itoa(port), timeout)
+	}
 
 	return err
 }

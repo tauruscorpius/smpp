@@ -17,9 +17,9 @@ func (t *Receiver) GetSmpp() *Smpp {
 }
 
 // eli = EnquireLink Interval in Seconds
-func NewReceiver(host string, port int, eli int, bindParams Params) (*Receiver, error) {
+func NewReceiver(host string, port int, timeout time.Duration, eli int, bindParams Params) (*Receiver, error) {
 	rx := &Receiver{}
-	if err := rx.Connect(host, port); err != nil {
+	if err := rx.Connect(host, port, timeout); err != nil {
 		return nil, err
 	}
 

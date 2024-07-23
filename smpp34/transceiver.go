@@ -21,25 +21,25 @@ func (t *Transceiver) ELDuration(v int) { t.eLDuration = v }
 
 // NewTransceiver creates and initializes a new Transceiver.
 // The eli parameter is for EnquireLink interval, in seconds.
-func NewTransceiver(host string, port int, eli int, bindParams Params) (*Transceiver, error) {
-	return newTransceiver(host, port, eli, bindParams, nil)
+func NewTransceiver(host string, port int, timeout time.Duration, eli int, bindParams Params) (*Transceiver, error) {
+	return newTransceiver(host, port, timeout, eli, bindParams, nil)
 }
 
 // NewTransceiver creates and initializes a new Transceiver using TLS.
 // The eli parameter is for EnquireLink interval, in seconds.
-func NewTransceiverTLS(host string, port int, eli int, bindParams Params, config *tls.Config) (*Transceiver, error) {
+func NewTransceiverTLS(host string, port int, timeout time.Duration, eli int, bindParams Params, config *tls.Config) (*Transceiver, error) {
 	if config == nil {
 		config = &tls.Config{}
 	}
-	return newTransceiver(host, port, eli, bindParams, config)
+	return newTransceiver(host, port, timeout, eli, bindParams, config)
 }
 
 // eli = EnquireLink Interval in Seconds
-func newTransceiver(host string, port int, eli int, bindParams Params, config *tls.Config) (*Transceiver, error) {
+func newTransceiver(host string, port int, timeout time.Duration, eli int, bindParams Params, config *tls.Config) (*Transceiver, error) {
 	trx := &Transceiver{}
 	var err error
 	if config == nil {
-		err = trx.Connect(host, port)
+		err = trx.Connect(host, port, timeout)
 	} else {
 		err = trx.ConnectTLS(host, port, config)
 	}
